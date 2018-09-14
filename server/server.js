@@ -8,6 +8,7 @@ const { ObjectID } = require('mongodb');
 const mongoose = require('./db/mongoose');
 const User = require('./models/user');
 const Todo = require('./models/todo');
+const authenticate = require('./middleware/authenticate');
 
 const app = express();
 const port = process.env.PORT;
@@ -74,6 +75,10 @@ app.get('/todos/:id', function(req, res) {
   } else {
     return res.status(404).send('Invalid Id');
   }
+});
+
+app.get('/users/me', authenticate, function(req, res) {
+  res.send(req.user);
 });
 
 app.delete('/todos/:id', function(req, res) {
