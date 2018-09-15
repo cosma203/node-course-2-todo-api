@@ -112,6 +112,17 @@ app.delete('/todos/:id', function(req, res) {
   }
 });
 
+app.delete('/users/me/token', authenticate, function(req, res) {
+  req.user.removeToken(req.token).then(
+    function() {
+      res.status(200).send('Token removed!');
+    },
+    function() {
+      res.status(400).send();
+    }
+  );
+});
+
 app.patch('/todos/:id', function(req, res) {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
