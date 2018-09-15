@@ -19,10 +19,12 @@ app.use(bodyParser.json());
 
 // --Routes--
 
-app.post('/todos', function(req, res) {
+app.post('/todos', authenticate, function(req, res) {
   var todo = new Todo({
-    text: req.body.text
+    text: req.body.text,
+    _creator: req.user._id
   });
+
   todo
     .save()
     .then(function(doc) {
@@ -64,8 +66,8 @@ app.post('/users/login', (req, res) => {
     });
 });
 
-app.get('/todos', function(req, res) {
-  Todo.find({})
+app.get('/todos', authenticate, function(req, res) {
+  Todo.find({ _creator: req.user._id })
     .then(function(todos) {
       res.status(200).send({ todos });
     })
@@ -74,9 +76,12 @@ app.get('/todos', function(req, res) {
     });
 });
 
-app.get('/todos/:id', function(req, res) {
+app.get('/todos/:id', authenticate, function(req, res) {
   if (ObjectID.isValid(req.params.id)) {
-    Todo.findById(req.params.id)
+    Todo.findOne({
+      _id: req.params.id,
+      _creator: req.user._id
+    })
       .then(function(todo) {
         if (!todo) {
           res.status(404).send('User not found');
@@ -95,9 +100,9 @@ app.get('/users/me', authenticate, function(req, res) {
   res.send(req.user);
 });
 
-app.delete('/todos/:id', function(req, res) {
+app.delete('/todos/:id', authenticate, function(req, res) {
   if (ObjectID.isValid(req.params.id)) {
-    Todo.findByIdAndRemove(req.params.id)
+    Todo.findOneAndRemove({ _id: req.params.id, _creator: req.user._id })
       .then(function(todo) {
         if (!todo) {
           res.status(404).send('User not found');
@@ -123,7 +128,7 @@ app.delete('/users/me/token', authenticate, function(req, res) {
   );
 });
 
-app.patch('/todos/:id', function(req, res) {
+app.patch('/todos/:id', authenticate, function(req, res) {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
 
@@ -138,7 +143,7 @@ app.patch('/todos/:id', function(req, res) {
     body.completedAt = null;
   }
 
-  Todo.findOneAndUpdate(id, { $set: body }, { new: true })
+  Todo.findOneAndUpdate({ _id: id, _creator: req.user.id }, { $set: body }, { new: true })
     .then(function(todo) {
       if (!todo) {
         res.status(404).send('User not found');
