@@ -1,7 +1,6 @@
 {
   "name": "node-todo-api",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
@@ -28,5 +27,15 @@
     "nodemon": "^1.10.2",
     "supertest": "^2.0.0",
     "validator": "^5.6.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cosma203/node-course-2-todo-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cosma203/node-course-2-todo-api/issues"
+  },
+  "homepage": "https://github.com/cosma203/node-course-2-todo-api#readme",
+  "description": ""
 }
